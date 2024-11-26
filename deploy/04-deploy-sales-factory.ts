@@ -60,6 +60,7 @@ const deploySalesFactory: DeployFunction = async function (
     );
 
     await initTx.wait(1);
+    console.log(`initTx: ${initTx.hash}`);
   } else {
   }
 };

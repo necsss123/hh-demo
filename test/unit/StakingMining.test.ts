@@ -23,7 +23,7 @@ developmentChains.includes(network.name)
       const chainId = network.config.chainId!;
 
       beforeEach(async () => {
-        console.log("beforeEach");
+        // console.log("beforeEach is running...");
         accounts = await ethers.getSigners();
         deployer = accounts[0];
         user = accounts[1];
@@ -38,18 +38,23 @@ developmentChains.includes(network.name)
           (await deployments.get("Airdrop")).address,
           deployer
         );
-        const stakingMiningProxyAdmin = await ethers.getContractAt(
-          "StakingMiningProxyAdmin",
-          (await deployments.get("StakingMiningProxyAdmin")).address,
-          deployer
-        );
-        const stakingMiningImp =
-          await stakingMiningProxyAdmin.getProxyImplementation(
-            (await deployments.get("StakingMining_Proxy")).address
-          );
+        // const stakingMiningProxyAdmin = await ethers.getContractAt(
+        //   "StakingMiningProxyAdmin",
+        //   (await deployments.get("StakingMiningProxyAdmin")).address,
+        //   deployer
+        // );
+        // const stakingMiningImp =
+        //   await stakingMiningProxyAdmin.getProxyImplementation(
+        //     (await deployments.get("StakingMining_Proxy")).address
+        //   );
+        // stakingMiningDeployer = await ethers.getContractAt(
+        //   "StakingMining",
+        //   stakingMiningImp,
+        //   deployer
+        // );
         stakingMiningDeployer = await ethers.getContractAt(
           "StakingMining",
-          stakingMiningImp,
+          (await deployments.get("StakingMining_Proxy")).address,
           deployer
         );
         icefrogAddr = icefrogDeployer.target as string;
@@ -61,8 +66,8 @@ developmentChains.includes(network.name)
         deployerBalance = await icefrogDeployer.balanceOf(deployer.address);
         userBalance = await icefrogDeployer.balanceOf(user.address);
         rewardPerSec = await stakingMiningDeployer.getRewardPerSec();
-        console.log(`deployerBalance: ${deployerBalance.toString()}`);
-        console.log(`userBalance: ${userBalance.toString()}`);
+        // console.log(`deployerBalance: ${deployerBalance.toString()}`);
+        // console.log(`userBalance: ${userBalance.toString()}`);
       });
 
       describe("init", () => {
