@@ -1,6 +1,6 @@
 import { claimAirdrop } from "./claimAirdrop";
 // @ts-ignore
-import { ethers, network, deployments, getNamedAccounts } from "hardhat";
+import { ethers, network, deployments } from "hardhat";
 import { networkConfig } from "../helper-hardhat-config";
 
 async function main() {
@@ -11,7 +11,7 @@ async function main() {
 
   const stakingMining = await ethers.getContractAt(
     "StakingMining",
-    (await deployments.get("StakingMining")).address
+    (await deployments.get("StakingMining_Proxy")).address
   );
 
   await claimAirdrop(icefrog);
@@ -29,11 +29,9 @@ async function main() {
 
   await stakingMining.add(100, icefrog.target, true);
 
-  let poolNum = await stakingMining.poolLength();
+  let poolNum = await stakingMining.getPoolNum();
 
-  const { deployer } = await getNamedAccounts();
-
-  console.log(`funded and LP token added,the num of pool is ${poolNum}}`);
+  console.log(`funded and LP token added,the num of pool is ${poolNum}`);
 }
 
 main()
@@ -42,3 +40,6 @@ main()
     console.error(error);
     process.exit(1);
   });
+
+// 测试向空投合约转移1000个Icefrog，并领取空投。测试向质押挖矿合约添加1个流动性池
+// yarn hardhat run scripts/stakingMining.ts --network localhost

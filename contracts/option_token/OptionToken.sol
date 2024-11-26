@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 error OpToken__InvalidTime();
 error OpToken__TransferFailed();
+error OpToken__TimeIsNotYet();
 
 contract OptionToken is ERC20, Ownable {
     using SafeERC20 for IERC20;
@@ -62,7 +63,9 @@ contract OptionToken is ERC20, Ownable {
 
     // 到了行权日期销毁行权token
     function burnAll() external onlyOwner {
-        require(block.timestamp >= settlementTime + during, "not end");
+        if (block.timestamp < settlementTime + during) {
+            revert OpToken__TimeIsNotYet();
+        }
         uint usdcAmount = IERC20(daiToken).balanceOf(address(this));
 
         IERC20(daiToken).safeTransfer(msg.sender, usdcAmount);

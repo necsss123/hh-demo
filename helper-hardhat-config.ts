@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 export interface networkConfigItem {
   lptoken?: string;
   _rewardPerSecond?: bigint;
-  _startTimestamp?: bigint;
+  // _startTimestamp?: bigint;
 }
 
 export interface networkConfigInfo {

@@ -5,9 +5,8 @@ import { developmentChains, networkConfig } from "../../helper-hardhat-config";
 import { Airdrop, IceFrog, StakingMining } from "../../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
-!developmentChains.includes(network.name)
-  ? describe.skip
-  : describe("StakingMining Unit Tests", () => {
+developmentChains.includes(network.name)
+  ? describe("StakingMining Unit Tests", () => {
       let icefrogDeployer: IceFrog, icefrogUser: IceFrog;
       let airdropDeployer: Airdrop, airdropUser: Airdrop;
       let stakingMiningDeployer: StakingMining,
@@ -24,6 +23,7 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
       const chainId = network.config.chainId!;
 
       beforeEach(async () => {
+        console.log("beforeEach");
         accounts = await ethers.getSigners();
         deployer = accounts[0];
         user = accounts[1];
@@ -33,54 +33,43 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
           (await deployments.get("IceFrog")).address,
           deployer
         );
-
         airdropDeployer = await ethers.getContractAt(
           "Airdrop",
           (await deployments.get("Airdrop")).address,
           deployer
         );
-
         const stakingMiningProxyAdmin = await ethers.getContractAt(
           "StakingMiningProxyAdmin",
           (await deployments.get("StakingMiningProxyAdmin")).address,
           deployer
         );
-
         const stakingMiningImp =
           await stakingMiningProxyAdmin.getProxyImplementation(
             (await deployments.get("StakingMining_Proxy")).address
           );
-
         stakingMiningDeployer = await ethers.getContractAt(
           "StakingMining",
           stakingMiningImp,
           deployer
         );
-
         icefrogAddr = icefrogDeployer.target as string;
         airdropAddr = airdropDeployer.target as string;
         stakingMiningAddr = stakingMiningDeployer.target as string;
-
         await icefrogDeployer.transfer(airdropAddr, ethers.parseEther("1000"));
-
         airdropUser = airdropDeployer.connect(user);
-
         await airdropUser.withdrawTokens();
-
         deployerBalance = await icefrogDeployer.balanceOf(deployer.address);
         userBalance = await icefrogDeployer.balanceOf(user.address);
-
         rewardPerSec = await stakingMiningDeployer.getRewardPerSec();
-
-        // console.log(`deployerBalance: ${deployerBalance.toString()}`);
-        // console.log(`userBalance: ${userBalance.toString()}`);
+        console.log(`deployerBalance: ${deployerBalance.toString()}`);
+        console.log(`userBalance: ${userBalance.toString()}`);
       });
 
-      describe("constructor", () => {
+      describe("init", () => {
         it("initializes the StakingMining correctly", async () => {
           const rewardToken = await stakingMiningDeployer.getRewardToken();
           const totalRewards = await stakingMiningDeployer.getTotalRewards();
-          const poolLength = await stakingMiningDeployer.poolLength();
+          const poolLength = await stakingMiningDeployer.getPoolNum();
           const owner = await stakingMiningDeployer.owner();
           assert.equal(
             rewardPerSec.toString(),
@@ -91,19 +80,17 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
           assert.equal(poolLength, 0n);
           assert.equal(owner, deployer.address);
         });
-
         it("should add a pool successfully", async () => {
           await stakingMiningDeployer.add(ALLOC_POINT, icefrogAddr, false);
-          const poolLength = await stakingMiningDeployer.poolLength();
+          const poolLength = await stakingMiningDeployer.getPoolNum();
           const totalAllocPoint =
             await stakingMiningDeployer.getTotalAllocPoint();
           assert.equal(poolLength, 1n);
           assert.equal(totalAllocPoint, BigInt(ALLOC_POINT));
         });
-
         it("should add a pool successfully with mass update", async () => {
           await stakingMiningDeployer.add(ALLOC_POINT, icefrogAddr, true);
-          const poolLength = await stakingMiningDeployer.poolLength();
+          const poolLength = await stakingMiningDeployer.getPoolNum();
           const totalAllocPoint =
             await stakingMiningDeployer.getTotalAllocPoint();
           assert.equal(poolLength, 1n);
@@ -181,11 +168,11 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
           stakingMiningUser = stakingMiningDeployer.connect(user);
           await stakingMiningUser.deposit(0, DEFAULT_DEPOSIT);
 
-          const userDeposited = await stakingMiningUser.deposited(
+          const userDeposited = await stakingMiningUser.getDeposited(
             0,
             user.address
           );
-          const deployerDeposited = await stakingMiningDeployer.deposited(
+          const deployerDeposited = await stakingMiningDeployer.getDeposited(
             0,
             deployer.address
           );
@@ -218,7 +205,7 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
           stakingMiningUser = stakingMiningDeployer.connect(user);
           await stakingMiningUser.deposit(0, DEFAULT_DEPOSIT);
 
-          const userPendingReward = await stakingMiningUser.pendingReward(
+          const userPendingReward = await stakingMiningUser.getPendingReward(
             0,
             user.address
           );
@@ -237,7 +224,7 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
           ]);
           await ethers.provider.send("evm_mine", []);
 
-          const userPendingReward = await stakingMiningUser.pendingReward(
+          const userPendingReward = await stakingMiningUser.getPendingReward(
             0,
             user.address
           );
@@ -263,7 +250,7 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
           ]);
           await ethers.provider.send("evm_mine", []);
 
-          const userPendingReward = await stakingMiningUser.pendingReward(
+          const userPendingReward = await stakingMiningUser.getPendingReward(
             0,
             user.address
           );
@@ -321,4 +308,5 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
             .withArgs(user.address, 0, DEFAULT_DEPOSIT);
         });
       });
-    });
+    })
+  : describe.skip;

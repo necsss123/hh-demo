@@ -9,7 +9,7 @@ async function main() {
 
   const proxyStakingMining = await ethers.getContractAt(
     "StakingMining",
-    (await deployments.get("StakingMining")).address
+    (await deployments.get("StakingMining_Proxy")).address
   );
 
   const versionV1 = await proxyStakingMining.version();
@@ -30,6 +30,7 @@ async function main() {
 
   const proxyStakingMiningV2 = await ethers.getContractAt(
     "StakingMiningV2",
+    // @ts-ignore
     proxyStakingMining.target
   );
 
@@ -44,3 +45,6 @@ main()
     console.error(error);
     process.exit(1);
   });
+
+// 测试合约的升级
+// yarn hardhat run scripts/upgradeStakingMining.ts --network localhost

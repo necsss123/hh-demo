@@ -9,7 +9,6 @@ import {
   BLOCK_CONFIRMATIONS,
 } from "../helper-hardhat-config";
 
-// 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
 const deployStakingMiningV2: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
 ) {
@@ -19,29 +18,12 @@ const deployStakingMiningV2: DeployFunction = async function (
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId;
 
-  //   let icefrog, icefrogAddr;
-
   if (chainId == 31337) {
     const waitBlockConfirmations = developmentChains.includes(network.name)
       ? 1
       : BLOCK_CONFIRMATIONS;
 
-    // icefrog = await ethers.getContractAt(
-    //   "IceFrog",
-    //   (await deployments.get("IceFrog")).address
-    // );
-
-    // icefrogAddr = icefrog.target;
-    const START_TIMESTAMP_DELTA = 600;
-    const startTimestamp =
-      (await ethers.provider.getBlock("latest")).timestamp +
-      START_TIMESTAMP_DELTA;
-
-    const args: any[] = [
-      networkConfig[31337]["lptoken"],
-      networkConfig[31337]["_rewardPerSecond"],
-      startTimestamp,
-    ];
+    const args: any[] = [];
 
     const feeData = await ethers.provider.getFeeData();
 
