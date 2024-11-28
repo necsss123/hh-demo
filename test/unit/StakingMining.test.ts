@@ -5,6 +5,7 @@ import { developmentChains, networkConfig } from "../../helper-hardhat-config";
 import { Airdrop, IceFrog, StakingMining } from "../../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
+// yarn hardhat test test/unit/StakingMining.test.ts
 developmentChains.includes(network.name)
   ? describe("StakingMining Unit Tests", () => {
       let icefrogDeployer: IceFrog, icefrogUser: IceFrog;

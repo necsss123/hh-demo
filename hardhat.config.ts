@@ -10,6 +10,10 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       chainId: 31337,
+      // accounts: {
+      //   mnemonic:
+      //     "drastic doctor stock welcome squirrel salute evolve panda thumb awake jump sail",
+      // },
       //  allowUnlimitedContractSize: true,
     },
     localhost: {
@@ -35,6 +39,9 @@ const config: HardhatUserConfig = {
     },
     player: {
       default: 1,
+    },
+    investor: {
+      default: 2,
     },
   },
   mocha: {

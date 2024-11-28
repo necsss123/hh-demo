@@ -3,6 +3,8 @@ import { claimAirdrop } from "./claimAirdrop";
 import { ethers, network, deployments } from "hardhat";
 import { networkConfig } from "../helper-hardhat-config";
 
+// 测试向空投合约转移1000个Icefrog，并领取空投。测试向质押挖矿合约添加1个流动性池
+// yarn hardhat run scripts/stakingMining.ts --network localhost
 async function main() {
   const icefrog = await ethers.getContractAt(
     "IceFrog",
@@ -40,6 +42,3 @@ main()
     console.error(error);
     process.exit(1);
   });
-
-// 测试向空投合约转移1000个Icefrog，并领取空投。测试向质押挖矿合约添加1个流动性池
-// yarn hardhat run scripts/stakingMining.ts --network localhost

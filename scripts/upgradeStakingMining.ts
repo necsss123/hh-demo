@@ -1,6 +1,8 @@
 // @ts-ignore
 import { ethers, deployments } from "hardhat";
 
+// 测试合约的升级
+// yarn hardhat run scripts/upgradeStakingMining.ts --network localhost
 async function main() {
   const stakingMiningProxyAdmin = await ethers.getContractAt(
     "StakingMiningProxyAdmin",
@@ -45,6 +47,3 @@ main()
     console.error(error);
     process.exit(1);
   });
-
-// 测试合约的升级
-// yarn hardhat run scripts/upgradeStakingMining.ts --network localhost

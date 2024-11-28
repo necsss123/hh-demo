@@ -17,11 +17,12 @@ contract SalesFactory is Ownable {
     address[] private allSales;
 
     event SaleDeployed(address saleContract);
-    event SaleOwnerAndTokenSetInFactory(
-        address sale,
-        address saleOwner,
-        address saleToken
-    );
+
+    // event SaleOwnerAndTokenSetInFactory(
+    //     address sale,
+    //     address saleOwner,
+    //     address saleToken
+    // );
 
     constructor(address _stakingMining) {
         i_stakingMining = _stakingMining;
@@ -67,5 +68,9 @@ contract SalesFactory is Ownable {
         }
 
         return sales;
+    }
+
+    function getStakingMiningAddr() external view returns (address) {
+        return i_stakingMining;
     }
 }

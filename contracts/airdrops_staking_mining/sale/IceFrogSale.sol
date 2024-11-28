@@ -6,6 +6,7 @@ import "../StakingMining.sol";
 import "@chainlink/contracts/node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@chainlink/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@chainlink/contracts/node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "hardhat/console.sol";
 
 error IceFrogSale__OnlyCallBySaleOwner();
 error IceFrogSale__OnlyCallByAdmin();
@@ -90,7 +91,7 @@ contract IceFrogSale is ReentrancyGuard {
     SalesFactory private immutable i_salesFactory;
 
     Sale public sale;
-    Registration public registration;
+    Registration private registration;
     uint256 public numberOfParticipants; // 参与购买的投资者数量
     mapping(address => Participation) public userToParticipation; // userAccount -> Participation
     mapping(address => bool) public isRegistered; // userAccount -> 是否注册
@@ -267,7 +268,7 @@ contract IceFrogSale is ReentrancyGuard {
     function setRegistrationTime(
         uint256 _registrationTimeStarts,
         uint256 _registrationTimeEnds
-    ) external onlyOwner {
+    ) external onlyOwner onlyOnce(keccak256("setRegistrationTime")) {
         if (!sale.isCreated) {
             revert IceFrogSale__SaleIsNotExisted();
         }
@@ -418,7 +419,7 @@ contract IceFrogSale is ReentrancyGuard {
     function participate(
         bytes memory signature,
         uint256 amount
-    ) external payable {
+    ) external payable nonReentrant {
         if (amount <= 0) {
             revert IceFrogSale__InvalidETHAmount();
         }
@@ -598,7 +599,6 @@ contract IceFrogSale is ReentrancyGuard {
     ) public view returns (bool) {
         bytes32 hash = keccak256(abi.encodePacked(user, address(this)));
         bytes32 messageHash = hash.toEthSignedMessageHash();
-
         return i_salesFactory.owner() == messageHash.recover(signature);
     }
 
@@ -625,8 +625,20 @@ contract IceFrogSale is ReentrancyGuard {
         );
     }
 
+    function getRegistration() external view returns (Registration memory) {
+        return registration;
+    }
+
     function getNumberOfRegisteredUsers() external view returns (uint256) {
         return registration.numberOfRegistrants;
+    }
+
+    function getStakingMining() external view returns (StakingMining) {
+        return i_stakingMining;
+    }
+
+    function getSalesFactory() external view returns (SalesFactory) {
+        return i_salesFactory;
     }
 
     function getVestingInfo()

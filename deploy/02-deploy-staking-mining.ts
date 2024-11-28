@@ -23,11 +23,6 @@ const deployStakingMining: DeployFunction = async function (
       ? 1
       : BLOCK_CONFIRMATIONS;
 
-    // const START_TIMESTAMP_DELTA = 600;
-    // const startTimestamp =
-    //   (await ethers.provider.getBlock("latest")).timestamp +
-    //   START_TIMESTAMP_DELTA;
-
     const args: any[] = [];
 
     const feeData = await ethers.provider.getFeeData();
