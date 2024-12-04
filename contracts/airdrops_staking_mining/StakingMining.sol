@@ -74,7 +74,6 @@ contract StakingMining is OwnableUpgradeable {
 
     modifier onlyVerifiedSales() {
         if (!salesFactory.isSaleCreatedThroughFactory(msg.sender)) {
-            // 这里是个函数，SalesFactory中只有mapping
             revert StakingMining__SaleNotCreated();
         }
         _;
