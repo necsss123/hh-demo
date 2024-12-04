@@ -11,18 +11,10 @@ contract SalesFactory is Ownable {
     address private immutable i_stakingMining;
 
     mapping(address => bool) public isSaleCreatedThroughFactory;
-    // mapping(address => address) public saleOwnerToSale;
-    // mapping(address => address) public tokenToSale;
 
     address[] private allSales;
 
     event SaleDeployed(address saleContract);
-
-    // event SaleOwnerAndTokenSetInFactory(
-    //     address sale,
-    //     address saleOwner,
-    //     address saleToken
-    // );
 
     constructor(address _stakingMining) {
         i_stakingMining = _stakingMining;
